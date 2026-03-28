@@ -396,13 +396,13 @@ const Dashboard: React.FC = () => {
             
             <div className="flex items-center justify-between relative px-2 py-8">
               {/* the background line */}
-              <div className="absolute top-1/2 left-4 right-4 h-0.5 bg-gray-100 -z-10 -translate-y-1/2"></div>
+              <div className="absolute top-1/2 left-8 right-8 h-1 bg-gray-100 rounded-full -z-10 -translate-y-1/2"></div>
               
               {/* Highlight active path */}
               <motion.div 
                 initial={{ width: 0 }}
                 animate={{ width: activeIncidents > 0 ? `${(riskScore / 100) * 100}%` : 0 }}
-                className="absolute top-1/2 left-4 h-0.5 -z-10 -translate-y-1/2 bg-gradient-to-r from-unionBlue to-unionRed shadow-[0_0_10px_rgba(227,24,55,0.3)] transition-all duration-1000"
+                className="absolute top-1/2 left-8 h-1 -z-10 -translate-y-1/2 bg-gradient-to-r from-unionBlue via-unionBlue to-unionRed shadow-[0_0_15px_rgba(30,58,138,0.2)] transition-all duration-1000 rounded-full"
               ></motion.div>
 
               {flowNodes.map((node, i) => (
@@ -422,12 +422,12 @@ const Dashboard: React.FC = () => {
                       }}
                       className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-3 shadow-sm border-2 transition-all group-hover:shadow-lg cursor-help relative`}
                     >
-                      <node.icon size={24} className={node.compromised ? 'text-unionRed' : i === 0 ? 'text-unionBlue' : 'text-gray-300 group-hover:text-unionBlue transition-colors'} />
+                      <node.icon size={28} className={node.compromised ? 'text-unionRed' : i === 0 ? 'text-unionBlue' : 'text-blue-900/40 group-hover:text-unionBlue transition-colors'} />
                       
                       {/* Tooltip */}
-                      <div className="absolute -top-14 left-1/2 -translate-x-1/2 bg-gray-900/95 backdrop-blur-sm text-white text-[10px] py-2 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100 whitespace-nowrap pointer-events-none z-50 shadow-2xl border border-white/10 uppercase tracking-widest">
-                        <div className={`font-black mb-1 ${node.compromised ? 'text-unionRed' : 'text-blue-400'}`}>{node.label}: {node.compromised ? 'COMPROMISED' : 'SECURE'}</div>
-                        <div className="text-gray-400 font-bold text-[8px]">{node.compromised ? 'Suspicious traffic detected on this node' : 'Normal system operation observed'}</div>
+                      <div className="absolute -top-16 left-1/2 -translate-x-1/2 bg-gray-900/95 backdrop-blur-md text-white text-[10px] py-2.5 px-4 rounded-xl opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100 whitespace-nowrap pointer-events-none z-50 shadow-2xl border border-white/10 uppercase tracking-widest translate-y-2 group-hover:translate-y-0">
+                        <div className={`font-black mb-1.5 text-[11px] ${node.compromised ? 'text-unionRed' : 'text-blue-400'}`}>{node.label}: {node.compromised ? 'COMPROMISED' : 'SECURE'}</div>
+                        <div className="text-gray-300 font-bold text-[9px] tracking-tight">{node.compromised ? 'Suspicious traffic detected on this node' : 'No active threats detected'}</div>
                       </div>
 
                       {node.compromised && (
@@ -453,23 +453,25 @@ const Dashboard: React.FC = () => {
                       {node.label}
                     </span>
                   </div>
-                  {i < flowNodes.length - 1 && (
-                    <div className="flex-1 flex flex-col items-center justify-center">
-                      <div className="flex items-center space-x-1 overflow-hidden h-4">
-                        {[1, 2, 3].map(dot => (
+                   {i < flowNodes.length - 1 && (
+                    <div className="flex-1 flex flex-col items-center justify-center -mt-6">
+                      <div className="flex items-center space-x-1 overflow-hidden h-6">
+                        {[1, 2, 3, 4, 5].map(dot => (
                           <motion.div 
                             key={dot}
                             animate={{ 
-                              x: [0, 20], 
+                              x: [0, 40], 
                               opacity: [0, 1, 0],
-                              scale: activeIncidents > 0 && i === 1 ? [1, 1.5, 1] : 1
+                              scale: activeIncidents > 0 && i === 1 ? [1, 2, 1] : [1, 1.2, 1]
                             }}
-                            transition={{ repeat: Infinity, duration: 1.5, delay: dot * 0.4 }}
-                            className={`w-1 h-1 rounded-full ${activeIncidents > 0 && i === 1 ? 'bg-unionRed shadow-[0_0_5px_rgba(227,24,55,0.5)]' : 'bg-gray-200'}`}
+                            transition={{ repeat: Infinity, duration: 1.2, delay: dot * 0.2 }}
+                            className={`w-1.5 h-1.5 rounded-full ${activeIncidents > 0 && i === 1 ? 'bg-unionRed shadow-[0_0_10px_rgba(227,24,55,0.5)]' : 'bg-blue-400/30'}`}
                           ></motion.div>
                         ))}
                       </div>
-                      <MoveRight size={14} className={`${activeIncidents > 0 && flowNodes[i].compromised ? 'text-unionRed animate-pulse' : 'text-gray-100'} mt-1 opacity-20`} />
+                      <div className="flex items-center text-unionBlue/40 mt-1">
+                        <MoveRight size={20} className={`${activeIncidents > 0 && flowNodes[i].compromised ? 'text-unionRed animate-pulse' : 'text-unionBlue/40'}`} />
+                      </div>
                     </div>
                   )}
                 </React.Fragment>
@@ -630,20 +632,20 @@ const Dashboard: React.FC = () => {
       <AnimatePresence>
         {showAIResponse && (
           <>
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowAIResponse(false)}
-              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100]"
-            />
-            <motion.div 
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-2xl z-[101] overflow-hidden flex flex-col"
-            >
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowAIResponse(false)}
+                className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[200]"
+              />
+              <motion.div 
+                initial={{ x: '100%', filter: 'blur(10px)' }}
+                animate={{ x: 0, filter: 'blur(0px)' }}
+                exit={{ x: '100%', filter: 'blur(10px)' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="fixed right-0 top-0 bottom-0 w-full max-w-[480px] bg-white shadow-2xl z-[201] overflow-hidden flex flex-col"
+              >
               <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-unionBlue text-white">
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-white/10 rounded-lg">
