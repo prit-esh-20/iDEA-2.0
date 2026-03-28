@@ -183,16 +183,16 @@ const Vulnerabilities: React.FC = () => {
                   
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
                     <div className="bg-gray-50 rounded p-2">
-                      <div className="text-[10px] text-gray-400 uppercase font-semibold mb-1">Version</div>
+                      <div className="text-xs text-gray-400 uppercase font-semibold mb-1">Version</div>
                       <div className="text-sm font-medium text-gray-700">{vuln.softwareVersion}</div>
                     </div>
                     <div className="bg-gray-50 rounded p-2">
-                      <div className="text-[10px] text-gray-400 uppercase font-semibold mb-1">Open Ports</div>
+                      <div className="text-xs text-gray-400 uppercase font-semibold mb-1">Open Ports</div>
                       <div className="text-sm font-medium text-gray-700">{vuln.openPorts || 'None detected'}</div>
                     </div>
                     <div className="bg-gray-50 rounded p-2 flex flex-col justify-center">
-                      <div className="text-[10px] text-gray-400 uppercase font-semibold mb-1">Auth Status</div>
-                      <div className="text-xs font-bold flex items-center">
+                      <div className="text-xs text-gray-400 uppercase font-semibold mb-1">Auth Status</div>
+                      <div className="text-sm font-bold flex items-center">
                         {vuln.weakAuth 
                           ? <span className="text-unionRed flex items-center"><ShieldAlert size={12} className="mr-1"/> Weak</span> 
                           : <span className="text-green-600 flex items-center"><CheckCircle size={12} className="mr-1"/> Strong</span>
@@ -200,8 +200,8 @@ const Vulnerabilities: React.FC = () => {
                       </div>
                     </div>
                     <div className="bg-gray-50 rounded p-2 flex flex-col justify-center">
-                      <div className="text-[10px] text-gray-400 uppercase font-semibold mb-1">Patch Status</div>
-                      <div className="text-xs font-bold flex items-center">
+                      <div className="text-xs text-gray-400 uppercase font-semibold mb-1">Patch Status</div>
+                      <div className="text-sm font-bold flex items-center">
                         {vuln.missingPatches 
                           ? <span className="text-orange-600 flex items-center"><ShieldAlert size={12} className="mr-1"/> Outdated</span> 
                           : <span className="text-green-600 flex items-center"><CheckCircle size={12} className="mr-1"/> Up-to-date</span>

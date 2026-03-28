@@ -14,7 +14,7 @@ const Layout: React.FC = () => {
       title: 'Monitoring',
       links: [
         { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={18} /> },
-        { name: 'Alerts', path: '/dashboard', icon: <Bell size={18} /> },
+        { name: 'Alerts', path: '/alerts', icon: <Bell size={18} /> },
       ]
     },
     {
@@ -59,7 +59,7 @@ const Layout: React.FC = () => {
         <nav className="flex-1 overflow-y-auto py-6">
           {navigationGroups.map((group) => (
             <div key={group.title} className="mb-6 px-4">
-              <h3 className="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-2 px-2">
+              <h3 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-2 px-2">
                 {group.title}
               </h3>
               <ul className="space-y-1">
@@ -69,7 +69,7 @@ const Layout: React.FC = () => {
                       to={link.path}
                       className={({ isActive }) =>
                         `flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200 ${
-                          isActive && (location.pathname === link.path || (link.name === 'Alerts' && location.pathname === '/dashboard'))
+                          isActive
                             ? 'bg-blue-800 text-white font-medium shadow-sm' 
                             : 'text-blue-200 hover:bg-blue-800/40 hover:text-white'
                         }`
@@ -86,7 +86,7 @@ const Layout: React.FC = () => {
         </nav>
 
         <div className="p-4 border-t border-blue-800">
-          <div className="text-[10px] text-blue-400 px-2 uppercase font-bold mb-2 tracking-widest">System Status</div>
+          <div className="text-xs text-blue-400 px-2 uppercase font-bold mb-2 tracking-widest">System Status</div>
           <div className="flex items-center space-x-2 px-2">
             <div className={`w-2.5 h-2.5 rounded-full ${activeIncidents > 0 ? 'bg-unionRed animate-pulse shadow-[0_0_8px_rgba(227,24,55,0.6)]' : 'bg-green-500'}`}></div>
             <span className="text-xs text-blue-100 font-medium">{activeIncidents > 0 ? 'Incidents Active' : 'All Systems Nominal'}</span>
@@ -113,7 +113,7 @@ const Layout: React.FC = () => {
             <div className="relative cursor-pointer hover:text-unionBlue transition-colors text-gray-500">
               <Bell size={20} />
               {alerts.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-unionRed text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white">
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-unionRed text-white text-[11px] font-bold flex items-center justify-center rounded-full border-2 border-white">
                   {alerts.length}
                 </span>
               )}
@@ -129,7 +129,7 @@ const Layout: React.FC = () => {
                 </div>
                 <div className="flex flex-col text-left">
                   <span className="text-sm font-semibold text-gray-800 leading-tight">SecOps {role}</span>
-                  <span className="text-[10px] text-gray-500 leading-tight">Union Bank</span>
+                  <span className="text-[11px] text-gray-500 leading-tight">Union Bank</span>
                 </div>
               </div>
 

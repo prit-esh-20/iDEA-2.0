@@ -26,7 +26,7 @@ const Dashboard: React.FC = () => {
       if (rec.id === id) {
         updateRiskScore(Math.max(20, riskScore - 15));
         setTimeline(t => [
-          { id: Date.now(), event: `Fix applied: ${rec.title} on ${rec.system}`, time: 'Just now', type: 'success', severity: 'Low' },
+          { id: Date.now(), event: `Fix applied: ${rec.title} closed`, time: 'Just now', type: 'success', severity: 'Low' },
           ...t
         ]);
         return { ...rec, status: 'Resolved' };
@@ -149,16 +149,16 @@ const Dashboard: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-unionRed rounded-full animate-pulse shadow-[0_0_8px_rgba(227,24,55,0.8)]"></div>
-              <h2 className="text-[10px] font-bold tracking-[0.2em] text-blue-200 uppercase flex items-center space-x-2">
+              <h2 className="text-sm font-bold tracking-[0.2em] text-blue-200 uppercase flex items-center space-x-2">
                 <span>AI Threat Intelligence</span>
               </h2>
             </div>
-            <span className="text-[10px] bg-unionRed text-white px-2 py-0.5 rounded font-bold uppercase tracking-widest">Priority: High</span>
+            <span className="text-xs bg-unionRed text-white px-3 py-1 rounded font-bold uppercase tracking-widest">Priority: High</span>
           </div>
           
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div className="flex-1">
-              <p className="text-xl leading-relaxed font-medium">
+              <p className="text-2xl leading-relaxed font-medium">
                 "High probability of <span className="text-unionRed font-bold underline decoration-2 underline-offset-4">Ransomware</span> attack due to exposed <span className="text-unionRed font-bold underline decoration-2 underline-offset-4">Port 445</span> (SMB) detected on Core Banking DB. Recommend immediate isolation."
               </p>
             </div>
@@ -208,7 +208,7 @@ const Dashboard: React.FC = () => {
           <div className="flex items-baseline space-x-2 mb-3">
             <span className={`text-5xl font-extrabold tracking-tighter ${getScoreColor(riskScore)}`}>{riskScore}</span>
             <span className="text-gray-400 text-sm font-medium">/ 100</span>
-            <span className={`ml-auto text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider ${
+            <span className={`ml-auto text-xs font-bold px-3 py-1.5 rounded uppercase tracking-wider ${
               riskScore > 80 ? 'bg-red-100 text-red-700' : 
               riskScore > 50 ? 'bg-yellow-100 text-yellow-700' : 
               'bg-blue-100 text-blue-700'
@@ -224,15 +224,15 @@ const Dashboard: React.FC = () => {
               style={{ width: `${riskScore}%` }}
             ></div>
           </div>
-          <p className="text-[11px] text-gray-500 leading-tight flex items-center justify-between">
+          <p className="text-[13px] text-gray-500 leading-tight flex items-center justify-between">
             <span><span className="font-bold text-gray-700">Insight:</span> Risk increased due to exposed SMB port 445.</span>
-            <span className="text-[9px] font-black text-green-600 bg-green-50 px-1.5 py-0.5 rounded border border-green-100 uppercase tracking-tighter ml-2">Status: {riskScore < 50 ? 'Mitigated' : 'Active'}</span>
+            <span className="text-[11px] font-black text-green-600 bg-green-50 px-2 py-1 rounded border border-green-100 uppercase tracking-tighter ml-2">Status: {riskScore < 50 ? 'Mitigated' : 'Active'}</span>
           </p>
         </motion.div>
 
         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.2 }} className="card hover:shadow-md transition-shadow">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-gray-500 font-medium text-sm tracking-wide uppercase">Threat Level</h3>
+            <h3 className="text-gray-500 font-medium text-base tracking-wide uppercase">Threat Level</h3>
             <Target className="text-unionBlue" size={20} />
           </div>
           <div className="flex items-center h-12">
@@ -245,7 +245,7 @@ const Dashboard: React.FC = () => {
 
         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.3 }} className="card hover:shadow-md transition-shadow">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-gray-500 font-medium text-sm tracking-wide uppercase">Active Incidents</h3>
+            <h3 className="text-gray-500 font-medium text-base tracking-wide uppercase">Active Incidents</h3>
             <Activity className={activeIncidents > 0 ? 'text-unionRed animate-pulse' : 'text-green-500'} size={20} />
           </div>
           <div className="text-4xl font-bold tracking-tight text-gray-800">
@@ -266,7 +266,7 @@ const Dashboard: React.FC = () => {
         <div className="lg:col-span-2 space-y-6">
           {/* Action Center */}
           <div className="card border-t-4 border-t-unionBlue shadow-sm">
-            <h3 className="text-sm font-bold text-gray-800 mb-6 flex items-center uppercase tracking-widest"><Zap className="mr-2 text-unionBlue" size={16} /> Action Center</h3>
+            <h3 className="text-base font-bold text-gray-800 mb-6 flex items-center uppercase tracking-widest"><Zap className="mr-2 text-unionBlue" size={18} /> Action Center</h3>
             <div className="flex flex-col md:flex-row gap-4">
               <button 
                 onClick={() => setShowAIResponse(true)}
@@ -322,7 +322,7 @@ const Dashboard: React.FC = () => {
 
           {/* AI Recommendations */}
           <div className="card border-l-4 border-l-unionBlue shadow-sm overflow-hidden bg-white/50 backdrop-blur-sm">
-            <h3 className="text-sm font-bold text-gray-800 mb-6 flex items-center uppercase tracking-widest"><CheckCircle className="mr-2 text-unionBlue" size={16} /> AI Recommendations Center</h3>
+            <h3 className="text-base font-bold text-gray-800 mb-6 flex items-center uppercase tracking-widest"><CheckCircle className="mr-2 text-unionBlue" size={18} /> AI Recommendations Center</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {recommendations.map((rec) => (
                 <motion.div 
@@ -335,14 +335,14 @@ const Dashboard: React.FC = () => {
                       {rec.status === 'Resolved' ? <CheckCircle size={20} /> : <rec.icon size={20} />}
                     </div>
                     <div className="flex flex-col items-end">
-                      <span className={`text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border mb-1 ${
+                      <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded border mb-1.5 ${
                         rec.priority === 'High' ? 'bg-red-50 text-unionRed border-red-100' : 
                         rec.priority === 'Medium' ? 'bg-orange-50 text-orange-600 border-orange-100' : 
                         'bg-blue-50 text-blue-600 border-blue-100'
                       }`}>
                         {rec.priority}
                       </span>
-                      <span className={`text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded ${
+                      <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded ${
                         rec.status === 'Resolved' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-gray-50 text-gray-500 border-gray-100'
                       }`}>
                         {rec.status}
@@ -358,16 +358,19 @@ const Dashboard: React.FC = () => {
                   {rec.status !== 'Resolved' && (
                     <button 
                       onClick={() => handleApplyFix(rec.id)}
-                      className="mt-auto w-full py-2 bg-unionRed/5 hover:bg-unionRed text-unionRed hover:text-white text-[10px] font-bold rounded-lg border border-unionRed/20 hover:border-unionRed transition-all uppercase tracking-widest"
+                      className="mt-auto w-full py-2 bg-unionRed/5 hover:bg-unionRed text-unionRed hover:text-white text-[10px] font-bold rounded-lg border border-unionRed/20 hover:border-unionRed transition-all uppercase tracking-widest active:scale-95"
                     >
                       Apply Fix
                     </button>
                   )}
                   
                   {rec.status === 'Resolved' && (
-                    <div className="mt-auto w-full py-2 text-center text-green-600 text-[10px] font-bold uppercase tracking-widest bg-green-50 rounded-lg flex items-center justify-center">
-                      <CheckCircle size={10} className="mr-1" /> Mitigated
-                    </div>
+                    <motion.div 
+                      initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                      className="mt-auto w-full py-2 text-center text-green-600 text-[10px] font-bold uppercase tracking-widest bg-green-50 rounded-lg border border-green-100 flex items-center justify-center"
+                    >
+                      <CheckCircle size={12} className="mr-1.5" /> Resolved
+                    </motion.div>
                   )}
                 </motion.div>
               ))}
@@ -424,29 +427,29 @@ const Dashboard: React.FC = () => {
                       {/* Tooltip */}
                       <div className="absolute -top-14 left-1/2 -translate-x-1/2 bg-gray-900/95 backdrop-blur-sm text-white text-[10px] py-2 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100 whitespace-nowrap pointer-events-none z-50 shadow-2xl border border-white/10 uppercase tracking-widest">
                         <div className={`font-black mb-1 ${node.compromised ? 'text-unionRed' : 'text-blue-400'}`}>{node.label}: {node.compromised ? 'COMPROMISED' : 'SECURE'}</div>
-                        <div className="text-gray-400 font-bold text-[8px]">{node.compromised ? 'Incoming malicious traffic detected' : 'Normal system operation observed'}</div>
+                        <div className="text-gray-400 font-bold text-[8px]">{node.compromised ? 'Suspicious traffic detected on this node' : 'Normal system operation observed'}</div>
                       </div>
 
                       {node.compromised && (
                         <>
                           <motion.div 
-                            animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.1, 1] }} 
+                            animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.15, 1] }} 
                             transition={{ repeat: Infinity, duration: 1.5 }}
-                            className="absolute inset-0 bg-unionRed/10 rounded-2xl -z-10 shadow-[0_0_20px_rgba(227,24,55,0.4)]"
+                            className="absolute inset-0 bg-unionRed/20 rounded-2xl -z-10 shadow-[0_0_25px_rgba(227,24,55,0.5)] border-2 border-unionRed"
                           ></motion.div>
                           <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap">
                              <motion.span 
                                 animate={{ opacity: [1, 0.7, 1], scale: [1, 1.05, 1] }}
                                 transition={{ repeat: Infinity, duration: 2 }}
-                                className="text-[9px] font-black text-unionRed uppercase tracking-[0.2em] bg-red-50 px-2 py-0.5 rounded border border-red-100 shadow-[0_2px_10px_rgba(227,24,55,0.1)] block"
+                                className="text-[11px] font-black text-unionRed uppercase tracking-[0.2em] bg-red-50 px-3 py-1 rounded border border-red-100 shadow-[0_2px_10px_rgba(227,24,55,0.1)] block"
                               >
-                                ! Breach Point
+                                ⚠ Breach Point
                               </motion.span>
                           </div>
                         </>
                       )}
                     </motion.div>
-                    <span className={`text-[10px] font-black tracking-[0.1em] mt-1 ${node.compromised ? 'text-unionRed underline decoration-2 underline-offset-4' : 'text-gray-400 uppercase'}`}>
+                    <span className={`text-xs font-black tracking-[0.1em] mt-1 ${node.compromised ? 'text-unionRed underline decoration-2 underline-offset-4' : 'text-gray-400 uppercase'}`}>
                       {node.label}
                     </span>
                   </div>
@@ -479,10 +482,10 @@ const Dashboard: React.FC = () => {
         <div className="space-y-6">
           <div className="card bg-white border-gray-100 shadow-xl overflow-hidden flex flex-col h-[525px]">
             <div className="flex justify-between items-center mb-6 px-2">
-              <h3 className="text-xs font-black text-gray-800 flex items-center uppercase tracking-widest">
-                <Bell className="mr-2 text-unionRed animate-pulse" size={14} /> Live Security Alerts
+              <h3 className="text-sm font-black text-gray-800 flex items-center uppercase tracking-widest">
+                <Bell className="mr-2 text-unionRed animate-pulse" size={16} /> Live Security Alerts
               </h3>
-              <span className="text-[10px] bg-red-50 text-unionRed px-2 py-0.5 rounded-full font-bold border border-red-100">{alerts.length} Active</span>
+              <span className="text-xs bg-red-50 text-unionRed px-3 py-1 rounded-full font-bold border border-red-100">{alerts.length} Active</span>
             </div>
 
             <div className="flex-1 overflow-y-auto space-y-3 px-2 pb-4 pt-1">
@@ -576,38 +579,44 @@ const Dashboard: React.FC = () => {
                   animate={{ opacity: 1, x: 0 }}
                   className="flex items-start relative z-10"
                 >
-                  <div className="w-20 text-[10px] font-black text-gray-300 uppercase tracking-tighter pt-1 flex-shrink-0">
+                  <div className="w-24 text-xs font-black text-gray-300 uppercase tracking-tighter pt-1 flex-shrink-0">
                     {item.time}
                   </div>
                   
-                  <div className={`w-3 h-3 rounded-full border-2 border-white flex-shrink-0 mt-1 relative z-10 shadow-sm ${
-                    item.severity === 'High' ? 'bg-unionRed ring-4 ring-red-50' : 
-                    item.severity === 'Medium' ? 'bg-orange-500 ring-4 ring-orange-50' : 
-                    'bg-blue-500 ring-4 ring-blue-50/50'
+                  <div className={`w-4 h-4 rounded-full border-2 border-white flex-shrink-0 mt-1 relative z-10 shadow-sm ${
+                    item.severity === 'High' ? 'bg-unionRed' : 
+                    item.severity === 'Medium' ? 'bg-yellow-400' : 
+                    'bg-blue-400'
                   }`}>
-                    {item.severity === 'High' && (
+                    {idx === 0 && (
                       <motion.div 
                         animate={{ opacity: [0, 1, 0], scale: [1, 2, 1] }}
-                        transition={{ repeat: Infinity, duration: 2 }}
-                        className="absolute inset-0 bg-unionRed rounded-full -z-10"
+                        transition={{ repeat: Infinity, duration: 1.5 }}
+                        className={`absolute inset-0 rounded-full -z-10 ${
+                          item.severity === 'High' ? 'bg-red-400' : 'bg-blue-300'
+                        }`}
                       />
                     )}
                   </div>
                   
-                  <div className="ml-6 flex flex-col pt-0.5">
-                    <div className="text-xs font-black text-gray-800 tracking-tight flex items-center">
+                  <div className="ml-8 flex flex-col pt-0.5">
+                    <div className="text-sm font-black text-gray-800 tracking-tight flex items-center">
                       {item.event}
-                      {idx === 0 && <span className="ml-3 text-[8px] bg-red-100 text-unionRed px-1.5 py-0.5 rounded font-black uppercase animate-pulse">New</span>}
+                      {idx === 0 && <span className="ml-4 text-[10px] bg-red-100 text-unionRed px-2 py-1 rounded font-black uppercase animate-pulse">New</span>}
                     </div>
-                    <div className="flex items-center mt-1.5 space-x-3">
-                       <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded border ${
+                    <div className="flex items-center mt-2.5 space-x-4">
+                       <span className={`text-[10px] font-black uppercase px-3 py-1 rounded border flex items-center ${
                          item.severity === 'High' ? 'bg-red-50 text-unionRed border-red-100' : 
-                         item.severity === 'Medium' ? 'bg-orange-50 text-orange-600 border-orange-100' :
+                         item.severity === 'Medium' ? 'bg-yellow-50 text-yellow-700 border-yellow-100' :
                          'bg-blue-50 text-blue-600 border-blue-100'
                        }`}>
+                          <div className={`w-1.5 h-1.5 rounded-full mr-2 ${
+                            item.severity === 'High' ? 'bg-unionRed' : 
+                            item.severity === 'Medium' ? 'bg-yellow-500' : 'bg-blue-500'
+                          }`}></div>
                           {item.severity} SEVERITY
                        </span>
-                       <span className="text-[9px] text-gray-400 font-bold uppercase tracking-tight">System Node: VLAN-SEC-04</span>
+                       <span className="text-[11px] text-gray-400 font-bold uppercase tracking-tight">System Node: VLAN-SEC-04</span>
                     </div>
                   </div>
                 </motion.div>

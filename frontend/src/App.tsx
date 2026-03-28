@@ -18,6 +18,7 @@ function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path="alerts" element={<Dashboard />} />
             <Route path="vulnerabilities" element={<Vulnerabilities />} />
             <Route path="predict-attack" element={<AttackPrediction />} />
             <Route path="simulate-attack" element={<SimulateAttack />} />
