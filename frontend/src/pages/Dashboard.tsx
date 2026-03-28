@@ -9,24 +9,44 @@ const Dashboard: React.FC = () => {
   const [showAIResponse, setShowAIResponse] = React.useState(false);
   const [showPrediction, setShowPrediction] = React.useState(false);
   const [timeline, setTimeline] = React.useState([
-    { id: 1, event: 'Suspicious login detected', time: '10:30 AM', type: 'warning' },
-    { id: 2, event: 'Port scan detected on subnet 10.0.0.4', time: '10:32 AM', type: 'info' },
-    { id: 3, event: 'Attack predicted', time: '10:35 AM', type: 'system' },
-    { id: 4, event: 'Alert generated', time: '10:37 AM', type: 'warning' }
+    { id: 1, event: 'Alert: Possible ransomware signature detected', time: '10:30 AM', type: 'warning', severity: 'High' },
+    { id: 2, event: 'Port scan activity detected on subnet 10.0.0.4', time: '10:32 AM', type: 'info', severity: 'Medium' },
+    { id: 3, event: 'Attack prediction: Escalation likely on App Server', time: '10:35 AM', type: 'system', severity: 'High' },
+    { id: 4, event: 'Unauthorized USB access on terminal CRT-02', time: '10:37 AM', type: 'warning', severity: 'High' }
   ]);
+
+  const [recommendations, setRecommendations] = React.useState([
+    { id: 1, title: 'Close SMB port 445', system: 'Core DB', icon: ShieldAlert, priority: 'High', status: 'Pending', desc: 'Port 445 is vulnerable to external access / lateral movement' },
+    { id: 2, title: 'Enable MFA', system: 'Cloud Portal', icon: Target, priority: 'Medium', status: 'Pending', desc: 'Ensure all admin accounts use hardware tokens / TOTP' },
+    { id: 3, title: 'Patch CVE-2024-1234', system: 'Web Server', icon: Zap, priority: 'High', status: 'Pending', desc: 'Critical RCE vulnerability found in Nginx module' }
+  ]);
+
+  const handleApplyFix = (id: number) => {
+    setRecommendations(prev => prev.map(rec => {
+      if (rec.id === id) {
+        updateRiskScore(Math.max(20, riskScore - 15));
+        setTimeline(t => [
+          { id: Date.now(), event: `Fix applied: ${rec.title} on ${rec.system}`, time: 'Just now', type: 'success', severity: 'Low' },
+          ...t
+        ]);
+        return { ...rec, status: 'Resolved' };
+      }
+      return rec;
+    }));
+  };
 
   // Simulated timeline update
   React.useEffect(() => {
     const interval = setInterval(() => {
       const events = [
-        'Brute force attempt on SSH',
-        'Outbound connection to known C2',
-        'Policy violation: Unauthorized USB',
-        'New vulnerability discovered: CVE-2024-1234'
+        { text: 'Brute force access attempt on SSH', sev: 'High' },
+        { text: 'Outbound connection to known C2', sev: 'High' },
+        { text: 'Policy violation: Unauthorized USB', sev: 'Medium' },
+        { text: 'New vulnerability: CVE-2024-1234', sev: 'High' }
       ];
       const randomEvent = events[Math.floor(Math.random() * events.length)];
       setTimeline(prev => [
-        { id: Date.now(), event: randomEvent, time: 'Just now', type: 'warning' },
+        { id: Date.now(), event: randomEvent.text, time: 'Just now', type: 'warning', severity: randomEvent.sev },
         ...prev.slice(0, 4)
       ]);
     }, 10000);
@@ -262,7 +282,13 @@ const Dashboard: React.FC = () => {
 
               <div className="flex flex-col gap-4 flex-[0.7]">
                 <button 
-                  onClick={() => simulateAttack('Ransomware', ['Web Server'])}
+                  onClick={() => {
+                    simulateAttack('Ransomware', ['Web Server']);
+                    setTimeline(t => [
+                      { id: Date.now(), event: 'Simulated Attack: Ransomware sequence initiated', time: 'Just now', type: 'warning', severity: 'High' },
+                      ...t
+                    ]);
+                  }}
                   disabled={role === 'Analyst'}
                   className="flex items-center space-x-4 p-4 rounded-xl border border-gray-100 bg-white hover:border-unionRed hover:shadow-md transition-all group disabled:opacity-50"
                 >
@@ -295,23 +321,55 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* AI Recommendations */}
-          <div className="card border-l-4 border-l-green-500 shadow-sm">
-            <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center uppercase tracking-widest"><CheckCircle className="mr-2 text-green-500" size={16} /> AI Recommendations</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {[
-                { title: 'Close SMB port 445', system: 'Core DB', icon: ShieldAlert, color: 'text-orange-500', bg: 'bg-orange-50' },
-                { title: 'Enable MFA', system: 'User Portal', icon: Target, color: 'text-blue-500', bg: 'bg-blue-50' },
-                { title: 'Apply latest patch', system: 'Web Server', icon: Zap, color: 'text-green-500', bg: 'bg-green-50' }
-              ].map((rec, i) => (
-                <div key={i} className="flex items-start space-x-3 p-3 rounded-lg bg-gray-50 border border-gray-100 hover:border-gray-300 transition-all cursor-pointer">
-                  <div className={`p-2 rounded-lg ${rec.bg} ${rec.color}`}>
-                    <rec.icon size={18} />
+          <div className="card border-l-4 border-l-unionBlue shadow-sm overflow-hidden bg-white/50 backdrop-blur-sm">
+            <h3 className="text-sm font-bold text-gray-800 mb-6 flex items-center uppercase tracking-widest"><CheckCircle className="mr-2 text-unionBlue" size={16} /> AI Recommendations Center</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {recommendations.map((rec) => (
+                <motion.div 
+                  key={rec.id} 
+                  animate={{ opacity: rec.status === 'Resolved' ? 0.6 : 1 }}
+                  className={`flex flex-col p-4 rounded-xl bg-white border border-gray-100 hover:border-unionBlue/30 hover:shadow-lg transition-all relative group ${rec.status === 'Resolved' ? 'grayscale-[0.5]' : ''}`}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className={`p-2.5 rounded-xl bg-gray-50 ${rec.status === 'Resolved' ? 'text-green-500' : 'text-unionBlue'}`}>
+                      {rec.status === 'Resolved' ? <CheckCircle size={20} /> : <rec.icon size={20} />}
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <span className={`text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border mb-1 ${
+                        rec.priority === 'High' ? 'bg-red-50 text-unionRed border-red-100' : 
+                        rec.priority === 'Medium' ? 'bg-orange-50 text-orange-600 border-orange-100' : 
+                        'bg-blue-50 text-blue-600 border-blue-100'
+                      }`}>
+                        {rec.priority}
+                      </span>
+                      <span className={`text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded ${
+                        rec.status === 'Resolved' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-gray-50 text-gray-500 border-gray-100'
+                      }`}>
+                        {rec.status}
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-xs font-bold text-gray-800">{rec.title}</div>
-                    <div className="text-[10px] text-gray-500 font-medium uppercase">{rec.system}</div>
+                  <div className="mb-4">
+                    <div className="text-xs font-black text-gray-800 leading-tight mb-1">{rec.title}</div>
+                    <div className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter mb-2">{rec.system}</div>
+                    <div className="text-[10px] text-gray-500 font-medium leading-normal line-clamp-2 italic">“{rec.desc}”</div>
                   </div>
-                </div>
+                  
+                  {rec.status !== 'Resolved' && (
+                    <button 
+                      onClick={() => handleApplyFix(rec.id)}
+                      className="mt-auto w-full py-2 bg-unionRed/5 hover:bg-unionRed text-unionRed hover:text-white text-[10px] font-bold rounded-lg border border-unionRed/20 hover:border-unionRed transition-all uppercase tracking-widest"
+                    >
+                      Apply Fix
+                    </button>
+                  )}
+                  
+                  {rec.status === 'Resolved' && (
+                    <div className="mt-auto w-full py-2 text-center text-green-600 text-[10px] font-bold uppercase tracking-widest bg-green-50 rounded-lg flex items-center justify-center">
+                      <CheckCircle size={10} className="mr-1" /> Mitigated
+                    </div>
+                  )}
+                </motion.div>
               ))}
             </div>
           </div>
@@ -320,14 +378,15 @@ const Dashboard: React.FC = () => {
           <div className="card shadow-sm overflow-hidden">
             <div className="flex justify-between items-center mb-10">
               <h3 className="text-sm font-bold text-gray-800 flex items-center uppercase tracking-widest">
-                <Activity className="mr-2 text-unionBlue" size={16} /> Attack Flow / Kill Chain
+                <Activity className="mr-2 text-unionBlue" size={16} /> Attack Execution Flow
               </h3>
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center text-[10px] font-bold text-gray-400 uppercase">
-                  <div className="w-2 h-2 rounded-full bg-unionRed mr-1 shadow-[0_0_5px_rgba(227,24,55,0.5)]"></div> Compromised
-                </div>
-                <div className="flex items-center text-[10px] font-bold text-gray-400 uppercase">
-                  <div className="w-2 h-2 rounded-full bg-gray-200 mr-1"></div> Secure
+              <div className="flex items-center space-x-6">
+                <div className="flex items-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                   <div className="flex items-center space-x-3 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
+                     <span className="flex items-center"><div className="w-2 h-2 rounded-full bg-unionRed mr-2 shadow-[0_0_5px_rgba(227,24,55,0.5)]"></div> Compromised</span>
+                     <span className="opacity-20 text-gray-900 mx-1">|</span>
+                     <span className="flex items-center text-green-600"><div className="w-2 h-2 rounded-full bg-green-500 mr-2 shadow-[0_0_5px_rgba(34,197,94,0.5)]"></div> Secure</span>
+                   </div>
                 </div>
               </div>
             </div>
@@ -360,40 +419,54 @@ const Dashboard: React.FC = () => {
                       }}
                       className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-3 shadow-sm border-2 transition-all group-hover:shadow-lg cursor-help relative`}
                     >
-                      <node.icon size={24} className={node.compromised ? 'text-unionRed' : 'text-gray-400 group-hover:text-unionBlue transition-colors'} />
+                      <node.icon size={24} className={node.compromised ? 'text-unionRed' : i === 0 ? 'text-unionBlue' : 'text-gray-300 group-hover:text-unionBlue transition-colors'} />
                       
                       {/* Tooltip */}
-                      <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] py-1.5 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl border border-white/10">
-                        <div className="font-bold">{node.label}</div>
-                        <div className="text-blue-300 font-mono text-[9px]">{node.details}</div>
+                      <div className="absolute -top-14 left-1/2 -translate-x-1/2 bg-gray-900/95 backdrop-blur-sm text-white text-[10px] py-2 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100 whitespace-nowrap pointer-events-none z-50 shadow-2xl border border-white/10 uppercase tracking-widest">
+                        <div className={`font-black mb-1 ${node.compromised ? 'text-unionRed' : 'text-blue-400'}`}>{node.label}: {node.compromised ? 'COMPROMISED' : 'SECURE'}</div>
+                        <div className="text-gray-400 font-bold text-[8px]">{node.compromised ? 'Incoming malicious traffic detected' : 'Normal system operation observed'}</div>
                       </div>
 
                       {node.compromised && (
                         <>
                           <motion.div 
-                            animate={{ opacity: [0.2, 0.5, 0.2] }} 
-                            transition={{ repeat: Infinity, duration: 1 }}
-                            className="absolute inset-0 bg-unionRed/20 rounded-2xl -z-10"
+                            animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.1, 1] }} 
+                            transition={{ repeat: Infinity, duration: 1.5 }}
+                            className="absolute inset-0 bg-unionRed/10 rounded-2xl -z-10 shadow-[0_0_20px_rgba(227,24,55,0.4)]"
                           ></motion.div>
                           <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap">
                              <motion.span 
-                                animate={{ opacity: [1, 0.7, 1], scale: [1, 1.02, 1] }}
+                                animate={{ opacity: [1, 0.7, 1], scale: [1, 1.05, 1] }}
                                 transition={{ repeat: Infinity, duration: 2 }}
-                                className="text-[9px] font-black text-unionRed uppercase tracking-wider bg-red-50 px-2 py-0.5 rounded border border-red-100 shadow-sm block"
+                                className="text-[9px] font-black text-unionRed uppercase tracking-[0.2em] bg-red-50 px-2 py-0.5 rounded border border-red-100 shadow-[0_2px_10px_rgba(227,24,55,0.1)] block"
                               >
-                                Current Breach Point
+                                ! Breach Point
                               </motion.span>
                           </div>
                         </>
                       )}
                     </motion.div>
-                    <span className={`text-[10px] font-bold tracking-tight mt-1 ${node.compromised ? 'text-unionRed' : 'text-gray-400 uppercase'}`}>
+                    <span className={`text-[10px] font-black tracking-[0.1em] mt-1 ${node.compromised ? 'text-unionRed underline decoration-2 underline-offset-4' : 'text-gray-400 uppercase'}`}>
                       {node.label}
                     </span>
                   </div>
                   {i < flowNodes.length - 1 && (
-                    <div className="flex-1 flex justify-center">
-                      <MoveRight size={16} className={`${activeIncidents > 0 && flowNodes[i].compromised ? 'text-unionRed animate-pulse' : 'text-gray-200'}`} />
+                    <div className="flex-1 flex flex-col items-center justify-center">
+                      <div className="flex items-center space-x-1 overflow-hidden h-4">
+                        {[1, 2, 3].map(dot => (
+                          <motion.div 
+                            key={dot}
+                            animate={{ 
+                              x: [0, 20], 
+                              opacity: [0, 1, 0],
+                              scale: activeIncidents > 0 && i === 1 ? [1, 1.5, 1] : 1
+                            }}
+                            transition={{ repeat: Infinity, duration: 1.5, delay: dot * 0.4 }}
+                            className={`w-1 h-1 rounded-full ${activeIncidents > 0 && i === 1 ? 'bg-unionRed shadow-[0_0_5px_rgba(227,24,55,0.5)]' : 'bg-gray-200'}`}
+                          ></motion.div>
+                        ))}
+                      </div>
+                      <MoveRight size={14} className={`${activeIncidents > 0 && flowNodes[i].compromised ? 'text-unionRed animate-pulse' : 'text-gray-100'} mt-1 opacity-20`} />
                     </div>
                   )}
                 </React.Fragment>
@@ -475,43 +548,70 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-      {/* System Activity Timeline - Moved to Bottom */}
+      {/* System Activity Timeline - Strict Vertical Structure */}
       <div className="grid grid-cols-1 gap-6">
-        <div className="card bg-gray-900 border-none shadow-2xl text-white overflow-hidden relative">
-          {/* Cyber-grid background for timeline */}
-          <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'linear-gradient(#4a5568 1px, transparent 1px), linear-gradient(90deg, #4a5568 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
-          
-          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 p-2">
+        <div className="card bg-white border-gray-100 shadow-xl relative overflow-hidden group">
+          <div className="flex justify-between items-center mb-10">
             <div>
-              <h3 className="text-xs font-black text-blue-400 mb-2 flex items-center uppercase tracking-[0.2em]">
-                <Activity className="mr-2 text-unionBlue" size={14} /> System Activity Timeline
+              <h3 className="text-[10px] font-black text-unionBlue mb-2 flex items-center uppercase tracking-[0.3em]">
+                <Activity className="mr-2 animate-pulse" size={14} /> LIVE ACTIVITY TIMELINE
               </h3>
-              <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Real-time Security Event Monitoring</p>
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Real-time threat landscape monitoring</p>
             </div>
+            <div className="flex items-center space-x-3 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100">
+               <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-ping"></div>
+               <span className="text-[9px] font-black uppercase tracking-widest text-blue-800">Tracking Active Feed</span>
+            </div>
+          </div>
+          
+          <div className="relative pl-8 pb-4">
+            {/* Vertical Line */}
+            <div className="absolute left-[39px] top-0 bottom-0 w-0.5 bg-gray-100"></div>
             
-            <div className="flex-1 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {timeline.map((item) => (
+            <div className="space-y-8">
+              {timeline.map((item, idx) => (
                 <motion.div 
                   key={item.id}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="flex items-start space-x-4 border-l-2 border-gray-800 pl-4 py-1"
+                  className="flex items-start relative z-10"
                 >
-                  <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 mt-1 shadow-[0_0_10px_rgba(255,255,255,0.1)] ${
-                    item.type === 'warning' ? 'bg-unionRed shadow-[0_0_8px_rgba(227,24,55,0.6)]' : 
-                    item.type === 'info' ? 'bg-unionBlue' : 'bg-green-500'
-                  }`}></div>
-                  <div className="flex flex-col">
-                    <span className="text-xs font-bold text-gray-100">{item.event}</span>
-                    <span className="text-[9px] text-gray-500 font-bold mt-1 uppercase tracking-tighter">{item.time}</span>
+                  <div className="w-20 text-[10px] font-black text-gray-300 uppercase tracking-tighter pt-1 flex-shrink-0">
+                    {item.time}
+                  </div>
+                  
+                  <div className={`w-3 h-3 rounded-full border-2 border-white flex-shrink-0 mt-1 relative z-10 shadow-sm ${
+                    item.severity === 'High' ? 'bg-unionRed ring-4 ring-red-50' : 
+                    item.severity === 'Medium' ? 'bg-orange-500 ring-4 ring-orange-50' : 
+                    'bg-blue-500 ring-4 ring-blue-50/50'
+                  }`}>
+                    {item.severity === 'High' && (
+                      <motion.div 
+                        animate={{ opacity: [0, 1, 0], scale: [1, 2, 1] }}
+                        transition={{ repeat: Infinity, duration: 2 }}
+                        className="absolute inset-0 bg-unionRed rounded-full -z-10"
+                      />
+                    )}
+                  </div>
+                  
+                  <div className="ml-6 flex flex-col pt-0.5">
+                    <div className="text-xs font-black text-gray-800 tracking-tight flex items-center">
+                      {item.event}
+                      {idx === 0 && <span className="ml-3 text-[8px] bg-red-100 text-unionRed px-1.5 py-0.5 rounded font-black uppercase animate-pulse">New</span>}
+                    </div>
+                    <div className="flex items-center mt-1.5 space-x-3">
+                       <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded border ${
+                         item.severity === 'High' ? 'bg-red-50 text-unionRed border-red-100' : 
+                         item.severity === 'Medium' ? 'bg-orange-50 text-orange-600 border-orange-100' :
+                         'bg-blue-50 text-blue-600 border-blue-100'
+                       }`}>
+                          {item.severity} SEVERITY
+                       </span>
+                       <span className="text-[9px] text-gray-400 font-bold uppercase tracking-tight">System Node: VLAN-SEC-04</span>
+                    </div>
                   </div>
                 </motion.div>
               ))}
-            </div>
-
-            <div className="flex items-center text-blue-400 space-x-2 bg-blue-500/10 px-3 py-2 rounded-lg border border-blue-500/20">
-               <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></div>
-               <span className="text-[10px] font-bold uppercase tracking-widest">Feed Active</span>
             </div>
           </div>
         </div>
