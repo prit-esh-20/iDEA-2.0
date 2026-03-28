@@ -11,7 +11,8 @@ const Dashboard: React.FC = () => {
   const [timeline, setTimeline] = React.useState([
     { id: 1, event: 'Suspicious login detected', time: '10:30 AM', type: 'warning' },
     { id: 2, event: 'Port scan detected on subnet 10.0.0.4', time: '10:32 AM', type: 'info' },
-    { id: 3, event: 'Attack prediction model threshold triggered', time: '10:35 AM', type: 'system' }
+    { id: 3, event: 'Attack predicted', time: '10:35 AM', type: 'system' },
+    { id: 4, event: 'Alert generated', time: '10:37 AM', type: 'warning' }
   ]);
 
   // Simulated timeline update
@@ -88,20 +89,26 @@ const Dashboard: React.FC = () => {
                 <Target size={24} className="text-indigo-300" />
               </div>
               <div>
-                <h4 className="font-bold text-sm tracking-wide">Attack Prediction Active</h4>
-                <p className="text-xs text-indigo-200 mb-2">AI Model predicts 78% likelihood of SQL Injection attempt in the next 4 hours.</p>
+                <h4 className="font-bold text-sm tracking-wide flex items-center uppercase tracking-[0.1em]">
+                  <Target size={14} className="mr-2" /> Attack Prediction Active
+                </h4>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-2 mb-3">
+                  <div className="text-[10px]"><span className="opacity-50 uppercase font-bold mr-1">Type:</span> SQL Injection</div>
+                  <div className="text-[10px]"><span className="opacity-50 uppercase font-bold mr-1">Prob:</span> 78.4%</div>
+                  <div className="text-[10px] col-span-2 text-indigo-200"><span className="opacity-50 uppercase font-bold mr-1">System:</span> Web Server (VLAN-2)</div>
+                </div>
                 <button 
                   onClick={() => {
                     setShowPrediction(false);
                     triggerAlert({
                       severity: 'Medium',
                       system: 'Web Server',
-                      message: 'Preemptive patch applied based on AI prediction.'
+                      message: 'Preemptive patch applied. Threat Mitigated.'
                     });
                   }}
-                  className="px-3 py-1 bg-white/20 hover:bg-white/40 rounded text-[10px] uppercase font-bold transition-colors"
+                  className="px-3 py-1 bg-white/20 hover:bg-white/40 rounded text-[10px] uppercase font-bold transition-colors border border-white/10"
                 >
-                  Patch Preemptively
+                  Apply Remediation
                 </button>
               </div>
             </div>
@@ -197,8 +204,9 @@ const Dashboard: React.FC = () => {
               style={{ width: `${riskScore}%` }}
             ></div>
           </div>
-          <p className="text-[11px] text-gray-500 leading-tight">
-            <span className="font-bold text-gray-700">Insight:</span> Risk increased due to exposed SMB port 445 on database node.
+          <p className="text-[11px] text-gray-500 leading-tight flex items-center justify-between">
+            <span><span className="font-bold text-gray-700">Insight:</span> Risk increased due to exposed SMB port 445.</span>
+            <span className="text-[9px] font-black text-green-600 bg-green-50 px-1.5 py-0.5 rounded border border-green-100 uppercase tracking-tighter ml-2">Status: {riskScore < 50 ? 'Mitigated' : 'Active'}</span>
           </p>
         </motion.div>
 
@@ -312,7 +320,7 @@ const Dashboard: React.FC = () => {
           <div className="card shadow-sm overflow-hidden">
             <div className="flex justify-between items-center mb-10">
               <h3 className="text-sm font-bold text-gray-800 flex items-center uppercase tracking-widest">
-                <Activity className="mr-2 text-unionBlue" size={16} /> Kill Chain Visualization
+                <Activity className="mr-2 text-unionBlue" size={16} /> Attack Flow / Kill Chain
               </h3>
               <div className="flex items-center space-x-4">
                 <div className="flex items-center text-[10px] font-bold text-gray-400 uppercase">
@@ -368,7 +376,13 @@ const Dashboard: React.FC = () => {
                             className="absolute inset-0 bg-unionRed/20 rounded-2xl -z-10"
                           ></motion.div>
                           <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap">
-                             <span className="text-[9px] font-black text-unionRed uppercase tracking-wider bg-red-50 px-2 py-0.5 rounded border border-red-100 shadow-sm">Current breach point: Web Server</span>
+                             <motion.span 
+                                animate={{ opacity: [1, 0.7, 1], scale: [1, 1.02, 1] }}
+                                transition={{ repeat: Infinity, duration: 2 }}
+                                className="text-[9px] font-black text-unionRed uppercase tracking-wider bg-red-50 px-2 py-0.5 rounded border border-red-100 shadow-sm block"
+                              >
+                                Current Breach Point
+                              </motion.span>
                           </div>
                         </>
                       )}
@@ -470,7 +484,7 @@ const Dashboard: React.FC = () => {
           <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 p-2">
             <div>
               <h3 className="text-xs font-black text-blue-400 mb-2 flex items-center uppercase tracking-[0.2em]">
-                <Activity className="mr-2 text-unionBlue" size={14} /> System Activity Log
+                <Activity className="mr-2 text-unionBlue" size={14} /> System Activity Timeline
               </h3>
               <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Real-time Security Event Monitoring</p>
             </div>
@@ -545,13 +559,14 @@ const Dashboard: React.FC = () => {
                 </section>
 
                 <section>
-                  <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[.2em] mb-4">Step-by-Step Response</h4>
+                  <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[.2em] mb-4">Step-by-Step Response Plan</h4>
                   <div className="space-y-4">
                     {[
-                      { step: 1, text: 'Identify and isolate compromised DB node (10.0.0.12)' },
-                      { step: 2, text: 'Block Port 445 across entire internal subnet' },
-                      { step: 3, text: 'Revoke access for compromised service accounts' },
-                      { step: 4, text: 'Initiate snapshot recovery for encrypted files' }
+                      { step: 1, text: 'Isolate affected system from network' },
+                      { step: 2, text: 'Block suspicious IP traffic' },
+                      { step: 3, text: 'Disable SMB port 445' },
+                      { step: 4, text: 'Run malware scan' },
+                      { step: 5, text: 'Restore affected systems from backup' }
                     ].map(s => (
                       <div key={s.step} className="flex items-start space-x-3">
                         <div className="w-5 h-5 rounded-full bg-unionBlue text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5">{s.step}</div>
@@ -562,30 +577,28 @@ const Dashboard: React.FC = () => {
                 </section>
 
                 <section>
-                  <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[.2em] mb-4">Root Cause</h4>
-                  <p className="text-sm text-gray-700 font-medium leading-relaxed">
-                    Legacy SMBv1 protocol was enabled on standard OS image, allowing EternalBlue-style exploitation from a compromised vendor endpoint.
-                  </p>
+                  <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[.2em] mb-4">Remediation Actions</h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2 text-sm text-gray-700 font-medium">
+                      <CheckCircle size={16} className="text-green-500" />
+                      <span>Apply latest security patches</span>
+                    </div>
+                    <div className="flex items-center space-x-2 text-sm text-gray-700 font-medium">
+                      <CheckCircle size={16} className="text-green-500" />
+                      <span>Enable firewall rules</span>
+                    </div>
+                    <div className="flex items-center space-x-2 text-sm text-gray-700 font-medium">
+                      <CheckCircle size={16} className="text-green-500" />
+                      <span>Enforce multi-factor authentication</span>
+                    </div>
+                  </div>
                 </section>
 
                 <section>
-                  <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[.2em] mb-4">Remediation Actions</h4>
-                  <div className="grid grid-cols-1 gap-3">
-                    <button className="w-full p-4 rounded-xl border border-unionBlue/20 bg-blue-50/50 flex items-center justify-between group hover:bg-unionBlue hover:text-white transition-all">
-                      <div className="flex items-center space-x-3 text-left">
-                        <ShieldAlert size={18} className="text-unionBlue group-hover:text-white" />
-                        <span className="text-xs font-bold">Apply Hotfix KB504938</span>
-                      </div>
-                      <ChevronRight size={16} />
-                    </button>
-                    <button className="w-full p-4 rounded-xl border border-red-200 bg-red-50/50 flex items-center justify-between group hover:bg-unionRed hover:text-white transition-all">
-                      <div className="flex items-center space-x-3 text-left">
-                        <Zap size={18} className="text-unionRed group-hover:text-white" />
-                        <span className="text-xs font-bold">Disable SMB Globally</span>
-                      </div>
-                      <ChevronRight size={16} />
-                    </button>
-                  </div>
+                  <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[.2em] mb-4">Root Cause Analysis</h4>
+                  <p className="text-sm text-gray-700 font-medium leading-relaxed">
+                    Open SMB port and lack of proper access control exposed the system to external threats.
+                  </p>
                 </section>
               </div>
 
