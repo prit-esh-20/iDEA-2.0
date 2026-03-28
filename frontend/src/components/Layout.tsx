@@ -9,20 +9,39 @@ const Layout: React.FC = () => {
   const [showRoleMenu, setShowRoleMenu] = useState(false);
   const location = useLocation();
 
-  const navLinks = [
-    { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
-    { name: 'Vulnerabilities', path: '/vulnerabilities', icon: <ShieldAlert size={20} /> },
-    { name: 'Attack Prediction', path: '/predict-attack', icon: <Target size={20} /> },
-    { name: 'Simulate Attack', path: '/simulate-attack', icon: <Activity size={20} />, adminOnly: true },
-    { name: 'AI Response', path: '/ai-response', icon: <Zap size={20} /> },
-    { name: 'AI Assistant', path: '/ai-assistant', icon: <Bot size={20} /> },
-    { name: 'Reports', path: '/reports', icon: <FileText size={20} /> },
+  const navigationGroups = [
+    {
+      title: 'Monitoring',
+      links: [
+        { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={18} /> },
+        { name: 'Alerts', path: '/dashboard', icon: <Bell size={18} /> },
+      ]
+    },
+    {
+      title: 'Analysis',
+      links: [
+        { name: 'Vulnerabilities', path: '/vulnerabilities', icon: <ShieldAlert size={18} /> },
+        { name: 'Attack Prediction', path: '/predict-attack', icon: <Target size={18} /> },
+      ]
+    },
+    {
+      title: 'Response',
+      links: [
+        { name: 'Simulate Attack', path: '/simulate-attack', icon: <Activity size={18} />, adminOnly: true },
+        { name: 'AI Response', path: '/ai-response', icon: <Zap size={18} /> },
+      ]
+    },
+    {
+      title: 'Support',
+      links: [
+        { name: 'AI Assistant', path: '/ai-assistant', icon: <Bot size={18} /> },
+        { name: 'Reports', path: '/reports', icon: <FileText size={18} /> },
+      ]
+    }
   ];
 
-  const filteredNavLinks = navLinks.filter(link => !link.adminOnly || role === 'Admin');
-
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div className="flex h-screen overflow-hidden bg-gray-50 uppercase-none">
       {/* Sidebar */}
       <aside className="w-64 bg-unionBlue text-white flex flex-col shadow-xl z-20">
         <div className="h-16 flex items-center px-6 border-b border-blue-800">
@@ -37,31 +56,40 @@ const Layout: React.FC = () => {
           </div>
         </div>
 
-        <nav className="flex-1 overflow-y-auto py-4">
-          <ul className="space-y-1 px-3">
-            {filteredNavLinks.map((link) => (
-              <li key={link.path}>
-                <NavLink
-                  to={link.path}
-                  className={({ isActive }) =>
-                    `flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-colors ${
-                      isActive ? 'bg-blue-800 text-white font-medium shadow-inner' : 'text-blue-200 hover:bg-blue-800/50 hover:text-white'
-                    }`
-                  }
-                >
-                  <span className="opacity-80">{link.icon}</span>
-                  <span>{link.name}</span>
-                </NavLink>
-              </li>
-            ))}
-          </ul>
+        <nav className="flex-1 overflow-y-auto py-6">
+          {navigationGroups.map((group) => (
+            <div key={group.title} className="mb-6 px-4">
+              <h3 className="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-2 px-2">
+                {group.title}
+              </h3>
+              <ul className="space-y-1">
+                {group.links.filter(link => !link.adminOnly || role === 'Admin').map((link) => (
+                  <li key={link.path + link.name}>
+                    <NavLink
+                      to={link.path}
+                      className={({ isActive }) =>
+                        `flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200 ${
+                          isActive && (location.pathname === link.path || (link.name === 'Alerts' && location.pathname === '/dashboard'))
+                            ? 'bg-blue-800 text-white font-medium shadow-sm' 
+                            : 'text-blue-200 hover:bg-blue-800/40 hover:text-white'
+                        }`
+                      }
+                    >
+                      <span className="opacity-80">{link.icon}</span>
+                      <span className="text-sm">{link.name}</span>
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </nav>
 
         <div className="p-4 border-t border-blue-800">
-          <div className="text-xs text-blue-300 px-2 uppercase font-semibold mb-2 tracking-wider">System Status</div>
+          <div className="text-[10px] text-blue-400 px-2 uppercase font-bold mb-2 tracking-widest">System Status</div>
           <div className="flex items-center space-x-2 px-2">
-            <div className={`w-3 h-3 rounded-full ${activeIncidents > 0 ? 'bg-unionRed animate-pulse' : 'bg-green-500'}`}></div>
-            <span className="text-sm text-blue-100">{activeIncidents > 0 ? 'Incidents Active' : 'All Systems Nominal'}</span>
+            <div className={`w-2.5 h-2.5 rounded-full ${activeIncidents > 0 ? 'bg-unionRed animate-pulse shadow-[0_0_8px_rgba(227,24,55,0.6)]' : 'bg-green-500'}`}></div>
+            <span className="text-xs text-blue-100 font-medium">{activeIncidents > 0 ? 'Incidents Active' : 'All Systems Nominal'}</span>
           </div>
         </div>
       </aside>

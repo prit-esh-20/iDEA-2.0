@@ -51,7 +51,7 @@ interface AppState {
 const AppContext = createContext<AppState | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [riskScore, setRiskScore] = useState(35);
+  const [riskScore, setRiskScore] = useState(78);
   const [threatLevel, setThreatLevel] = useState<AlertSeverity>('Low');
   const [activeIncidents, setActiveIncidents] = useState(0);
   const [alerts, setAlerts] = useState<Alert[]>([
